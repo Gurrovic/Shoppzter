@@ -1,0 +1,102 @@
+﻿@page "/showlist/{id:int}"
+
+@inject NavigationManager NavMan
+@inject IShoppingListService _shoppingListService
+
+@if (shoppingList != null)
+{
+    {
+        <div class="shopping-list-container">
+            <div class="shopping-list-header">
+                <span style="font-size: 20px;">@shoppingList.Name</span>
+                <button @onclick=ShowAddShoppingListItemModal class ="add-button">+</button>
+            </div>
+            @if (shoppingList.Items != null && shoppingList.Items.Any())
+            {
+                <div class="shopping-list-items">
+                    @foreach (var item in shoppingList.Items)
+                    {                        
+                        <div class="shopping-list-item d-flex justify-content-between align-items-center @GetItemCssClass(item)">
+                            <span @onclick="() => ToggleItem(item)" style="cursor: pointer;">@item.Name</span>
+                                <button class="icon-button float-end" @onclick="(() => DeleteItem(item))">
+                                    <i class="bi bi-trash" />
+                                </button>                            
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="no-items">No items in the list</div>
+            }
+            
+            <div style="margin-top:10px;">
+                <button class="btn futuristic-btn float-end" @onclick="(() => DeleteList(shoppingList))">Finished</button>
+            </div>            
+        </div>              
+    }
+}
+
+@code{
+    [Parameter]
+    public int id {get; set;}
+
+    [CascadingParameter]
+    public IModalService Modal { get; set; } = default!;
+
+    private ShoppingList shoppingList { get; set; }
+
+    private List<ShoppingList> shoppingLists { get; set; }
+
+    private ShoppingListItem newItem = new ShoppingListItem();    
+
+    protected override async Task OnInitializedAsync()
+    {
+        shoppingLists = await _shoppingListService.GetShoppingLists();
+        if (shoppingLists != null)
+        {
+            shoppingList = shoppingLists.FirstOrDefault(list => list.Id == id);
+        }
+    }
+
+    private async Task ShowAddShoppingListItemModal()
+    {
+        var parameters = new ModalParameters();
+        parameters.Add("ShoppingList", shoppingList); // Ensure the parameter name matches the expected property in your modal
+
+        var modal = Modal.Show<AddShoppingListItemModal>("Add New Item", parameters);        
+        var result = await modal.Result;
+
+        if (!result.Cancelled && result.Data is ShoppingListItem newItem)
+        {
+            shoppingLists = await _shoppingListService.GetShoppingLists(); // Refresh the list
+            Console.WriteLine("A new item was added");            
+        }
+    }
+
+    private async void ToggleItem(ShoppingListItem item)
+    {
+        item.Completed = !item.Completed;
+        await _shoppingListService.UpdateShoppingList(shoppingList);        
+    }    
+
+    private string GetItemCssClass(ShoppingListItem item)
+    {
+        return item.Completed ? "selected" : "";
+    }
+
+    private async Task DeleteItem(ShoppingListItem item)
+    {
+        shoppingList.Items.Remove(item);
+        await _shoppingListService.UpdateShoppingList(shoppingList);
+    }
+
+    private async Task DeleteList(ShoppingList shoppingList)
+    {
+        if(shoppingList.Items.All(x => x.Completed == true))
+        {            
+            await _shoppingListService.DeleteShoppingList(shoppingList);
+            NavMan.NavigateTo("/");
+        }        
+    }
+}

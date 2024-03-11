@@ -1,0 +1,64 @@
+.navStyle {
+    background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 50%, rgba(64,109,119,1) 100%);
+    width: 100%;
+    padding: 8px 8px;
+    Adjust padding as needed text-align: center;
+    white-space: nowrap;
+    z-index: 999;
+}
+
+.navbar-toggler-icon {
+    display: inline-block;
+    width: 25px;
+    height: 3px;
+    background-color: #fff;
+    position: relative;
+    border: none;
+    margin-bottom:3px;
+}
+
+    .navbar-toggler-icon::before,
+    .navbar-toggler-icon::after {
+        content: "";
+        display: block;
+        width: 25px;
+        height: 3px;
+        background-color: #fff;
+        position: absolute;
+        border: none;
+        left: 0;
+    }
+
+    .navbar-toggler-icon::before {
+        top: -10px;
+    }
+
+    .navbar-toggler-icon::after {
+        bottom: -10px;
+    }
+
+.navbar-toggler:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5); /* Example: Adding a white box shadow as focus indicator */
+}
+
+
+.navbar-brand{
+    color: white;
+    font-size: 24px;
+}
+
+.nav-scrollable {
+    background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 50%, rgba(64,109,119,1) 100%);
+    border-top: 1px solid #303030;    
+}
+
+
+.white {
+    color: white;    
+}
+
+.nav-link .bi {
+    color: white;
+    margin-right: 5px;
+}

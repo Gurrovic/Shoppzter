@@ -1,0 +1,22 @@
+{
+  "name": "Shoppzter",
+  "short_name": "Shoppzter",
+  "id": "./",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#03173d",
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "shoppzter512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    },
+    {
+      "src": "shoppzter192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    }
+  ]
+}

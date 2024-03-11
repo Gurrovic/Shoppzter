@@ -1,0 +1,17 @@
+.blazored-modal {
+    background-color: antiquewhite !important;    
+    margin-top: 100px !important;
+    color: blue;
+    margin-left: 20px !important;
+    margin-right: 20px !important;
+    border-radius: 8px !important;
+    max-width: 400px !important;
+    display: flex !important;
+    flex-direction: column !important;       
+}
+
+.blazored-modal-footer {
+    padding: 5px 0px !important;  /*Align with header's horizontal padding */
+    display: flex !important;  /*Align buttons easily */
+    justify-content: flex-end !important;  /*Push buttons to the right */
+}

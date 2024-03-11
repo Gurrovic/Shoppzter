@@ -1,0 +1,26 @@
+﻿@inherits InputText
+@inject IJSRuntime JSRuntime
+
+<input @ref="inputElement"
+       @attributes="AdditionalAttributes"
+       class="@CssClass"
+       value="@CurrentValueAsString"
+       @onchange="EventCallback.Factory.CreateBinder<string>(this, __value => CurrentValueAsString = __value, CurrentValueAsString)" />
+
+@code {
+    private ElementReference inputElement;
+    [Parameter] public bool Autofocus { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && Autofocus)
+        {
+            await FocusAsync();
+        }
+    }
+
+    public async ValueTask FocusAsync()
+    {
+        await JSRuntime.InvokeVoidAsync("BlazorFocusElement", inputElement);
+    }
+}

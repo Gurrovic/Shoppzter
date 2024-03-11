@@ -1,0 +1,50 @@
+﻿@inject IShoppingListService _shoppingListService
+
+<EditForm Model="@shoppingListItem" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <div>
+        <label for="shoppingListItemName">Item Name:</label>
+        <FocusableInputText 
+            Autofocus="true" 
+            id="shoppingListItemName"
+            @bind-Value="@shoppingListItem.Name" />
+    </div>
+    <div class="blazored-modal-footer">
+        <button type="submit" class="btn btn-success" style="margin-right: 5px;">Add</button>
+        <button @onclick="Close" class="btn btn-danger">Close</button>
+    </div>    
+</EditForm>
+
+@code {
+    [CascadingParameter]
+    BlazoredModalInstance BlazoredModal { get; set; } = default!;
+
+    [Parameter]
+    public ShoppingList shoppingList { get; set; }
+
+    public ShoppingListItem shoppingListItem { get; set; } = new ShoppingListItem();
+
+    private async Task Close() => await BlazoredModal.CancelAsync();
+
+    private async Task HandleValidSubmit()
+    {
+        await AddItemToList();
+        shoppingListItem = new ShoppingListItem(); // Reset the model to clear the form
+    }
+
+    private async Task AddItemToList()
+    {
+        if (shoppingListItem.Name != null)
+        {
+            if (shoppingList.Items == null)
+            {
+                shoppingList.Items = new List<ShoppingListItem>();
+            }
+            int maxId = shoppingList.Items.Any() ? shoppingList.Items.Max(sl => sl.Id) : 0;
+            shoppingListItem.Id = maxId + 1;
+            shoppingList.Items.Add(shoppingListItem);
+
+            await _shoppingListService.UpdateShoppingList(shoppingList);
+        }
+    }
+}
