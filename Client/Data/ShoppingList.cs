@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Shoppzter.Data
+namespace Client.Data
 {
     public class ShoppingList
     {

@@ -2,10 +2,10 @@ using Blazored.LocalStorage;
 using Blazored.Modal;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Shoppzter.Services;
-using Shoppzter.Services.Contracts;
+using Client.Services;
+using Client.Services.Contracts;
 
-namespace Shoppzter
+namespace Client
 {
     public class Program
     {

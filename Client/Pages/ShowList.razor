@@ -93,7 +93,8 @@
 
     private async Task DeleteList(ShoppingList shoppingList)
     {
-        if(shoppingList.Items.All(x => x.Completed == true))
+        
+        if(shoppingList.Items?.All(x => x.Completed) == true && shoppingList.Items.Any())
         {            
             await _shoppingListService.DeleteShoppingList(shoppingList);
             NavMan.NavigateTo("/");

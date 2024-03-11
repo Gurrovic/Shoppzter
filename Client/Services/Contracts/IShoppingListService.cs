@@ -1,6 +1,6 @@
-﻿using Shoppzter.Data;
+﻿using Client.Data;
 
-namespace Shoppzter.Services.Contracts
+namespace Client.Services.Contracts
 {
     public interface IShoppingListService
     {

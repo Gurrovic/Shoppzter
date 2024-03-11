@@ -1,4 +1,4 @@
-﻿namespace Shoppzter.Data
+﻿namespace Client.Data
 {
     public class ShoppingListItem
     {

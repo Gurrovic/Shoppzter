@@ -1,8 +1,8 @@
-﻿using Shoppzter.Data;
-using Shoppzter.Services.Contracts;
+﻿using Client.Data;
+using Client.Services.Contracts;
 using Blazored.LocalStorage;
 
-namespace Shoppzter.Services
+namespace Client.Services
 {
     public class ShoppingListService : IShoppingListService
     {
