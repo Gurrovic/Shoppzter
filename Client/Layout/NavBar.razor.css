@@ -7,7 +7,7 @@
 }
 
 .navbar-toggler {
-    display: none; /* Ensures the hamburger menu is hidden */
+    display: none;
 }
 
 .navbar-toggler-icon {
@@ -52,14 +52,14 @@
 }
 
 .nav-scrollable {
-    position: fixed; /* or absolute, depending on your layout */
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    height: 100vh; /* 100% of the viewport height */
+    height: 100vh;
     display: flex;
-    justify-content: center; /* Center horizontally */    
-    align-items: center; /* Center vertically */    
+    justify-content: center;  
+    align-items: center;
     z-index: 1050;
     background-color: rgb(55, 55, 55, 0.95);
     transform: translateX(100%);
@@ -100,13 +100,6 @@
     font-size: 1.5rem;    
 }
 
-/*.desktop-nav ::deep a.active {
-    background-color: rgba(255,255,255,0.37);
-    border-radius: 10px;
-    padding: 5px;
-    color: white;
-}*/
-
 .desktop-nav ::deep .nav-link-desktop:hover {
     color: grey;
     text-decoration: underline;
@@ -117,33 +110,33 @@
 /* Mobile view */
 @media (max-width: 1200px) {
     .desktop-nav {
-        display: none; /* Ensure desktop nav is hidden */
+        display: none;
     }
 
     .navbar-toggler {
-        display: block; /* Show hamburger icon */
+        display: block;
     }
 
     .nav-scrollable {
-        display: flex; /* Only shown when toggled by the hamburger menu */
+        display: flex;
     }
 }
 
 /* Desktop view */
 @media (min-width: 1201px) {
     .desktop-nav {
-        display: flex; /* Display navigation links horizontally */
+        display: flex;
         justify-content: center;
         align-items: center;        
         color: white;
     }   
 
     .nav-scrollable {
-        display: none; /* Hide mobile navigation menu */
+        display: none;
     }
 
     .navbar-toggler {
-        display: none; /* Hide toggler in desktop view */
+        display: none;
     }
 
     .navbar-brand {

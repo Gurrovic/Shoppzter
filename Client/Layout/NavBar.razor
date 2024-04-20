@@ -5,8 +5,7 @@
         <a class="navbar-brand" @onclick="GetHref">@ActiveNavItem</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
-        </button>
-        <!-- Desktop Navigation Links -->
+        </button>        
         <div class="desktop-nav">
             <NavLink class="nav-link-desktop" href="" Match="NavLinkMatch.All">Shopping Lists</NavLink>
             <NavLink class="nav-link-desktop" href="favorites">Favorites</NavLink>
@@ -80,10 +79,10 @@
         }
         else
         {
-            ActiveNavItem = "Shopping Lists"; // Default or another fallback
+            ActiveNavItem = "Shopping Lists"; 
         }
 
-        StateHasChanged(); // Refresh the component if necessary
+        StateHasChanged();
     }
 
     private void ToggleNavMenu()
