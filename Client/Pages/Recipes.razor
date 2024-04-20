@@ -1,5 +1,125 @@
-﻿<h3>Recipes</h3>
+﻿@page "/recipes"
+
+@inject RecipeService _recipeService
+@inject IShoppingListService _shoppingListService
+@inject NavigationManager NavMan
+@inject IToastService _toastService
+
+
+<div class="recipe-container">
+    <div class="recipe-buttons">
+        <div class="top-button" @onclick=GenerateNewRecipe>
+            <i class="bi bi-shuffle h1" />
+            <span>Random</span>
+        </div>
+        <div class="top-button" @onclick="CreateNewList">
+            <i class="bi bi-plus-circle h1" />
+            <span>Create List</span>
+        </div>
+        <div class="top-button" @onclick="() => SaveRecipe(RandomRecipe)">
+            <i class="@(RandomRecipe.Favorite ? "bi bi-heart-fill" : "bi bi-heart")"></i>
+            <span>Save</span>
+        </div>
+    </div>    
+
+    @if (RandomRecipe != null && RandomRecipe.Ingredients != null)
+    {
+        <div class="meal-container">
+            <div class="meal-image-header" style="background-image: url('@RandomRecipe.Thumbnail');" />
+                <div class="meal-content">
+                    <div class="meal-header-container">
+                        <p class="meal-header">@RandomRecipe.MealName</p>                    
+                     </div>
+                    <div class="ingredients-header">
+                        <h5>Ingredients</h5>
+                        <div class="ingredients-list">
+                            <ul>
+                                @for (int i = 0; i < RandomRecipe.Ingredients.Count; i++)
+                                {
+                                    <li>@RandomRecipe.Ingredients[i] - @RandomRecipe.Measures[i]</li>
+                                }
+                            </ul>
+                        </div>
+                        <ol>
+                            @foreach (var step in RandomRecipe.Instructions.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries))
+                            {
+                                <li>@step</li>
+                            }
+                        </ol>
+                </div>
+            </div>
+        </div>  
+    }
+    else
+    {
+        <p>Loading recipe...</p>
+    }
+</div>
+
 
 @code {
+    private RecipeDto RandomRecipe { get; set; } = new RecipeDto();
 
+    private ShoppingList ShoppingList { get; set; }
+
+    private List<ShoppingList> shoppingLists { get; set; } = [];
+
+    protected override async Task OnInitializedAsync()
+    {        
+        await GenerateNewRecipe();        
+    }
+
+    private async Task GenerateNewRecipe()
+    {
+        RandomRecipe = await _recipeService.GetRandomRecipeAsync();
+    }    
+
+    private async Task CreateNewList()
+    {
+        ShoppingList = new ShoppingList();
+        int id = 0;
+        ShoppingList.Name = RandomRecipe.MealName;
+
+        foreach (var ingredient in RandomRecipe.Ingredients)
+        {
+            ShoppingListItem newItem = new ShoppingListItem();
+            newItem.Name = ingredient;
+            newItem.Id = id;
+            ShoppingList.Items.Add(newItem);
+            id++;
+        }
+
+        await _shoppingListService.AddShoppingList(ShoppingList);
+        shoppingLists = await _shoppingListService.GetShoppingLists();
+
+        foreach(var shoppinglist in shoppingLists)
+        {
+            if (shoppinglist.Name == ShoppingList.Name)
+            {
+                ShoppingList.Id = shoppinglist.Id;
+                break;
+            }
+        }
+
+        NavMan.NavigateTo($"/showlist/{ShoppingList.Id}");
+    }
+
+    private async Task SaveRecipe(RecipeDto recipe)
+    {
+        if(recipe.Favorite == false)
+        {
+            _toastService.ShowSuccess($"Recipe saved to favorites");
+            recipe.Favorite = true;
+            await _recipeService.SaveRecipe(recipe);
+        }
+        else
+        {
+            _toastService.ShowSuccess($"Recipe removed from favorites");
+            recipe.Favorite = false;
+            await _recipeService.DeleteRecipe(recipe);
+        }
+    }
 }
+
+
+       

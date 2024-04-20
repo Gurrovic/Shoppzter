@@ -2,83 +2,73 @@
 
 @inject NavigationManager NavMan
 @inject IShoppingListService _shoppingListService
+@inject IToastService _toastService
 
-@if (shoppingList != null)
+@if (Model != null)
 {
     {
         <div class="shopping-list-container">
-            <div class="shopping-list-header">
-                <span style="font-size: 20px;">@shoppingList.Name</span>
-                <button @onclick=ShowAddShoppingListItemModal class ="add-button">+</button>
-            </div>
-            @if (shoppingList.Items != null && shoppingList.Items.Any())
-            {
-                <div class="shopping-list-items">
-                    @foreach (var item in shoppingList.Items)
-                    {                        
-                        <div class="shopping-list-item d-flex justify-content-between align-items-center @GetItemCssClass(item)">
-                            <span @onclick="() => ToggleItem(item)" style="cursor: pointer;">@item.Name</span>
-                                <button class="icon-button float-end" @onclick="(() => DeleteItem(item))">
-                                    <i class="bi bi-trash" />
-                                </button>                            
-                        </div>
-                    }
+            <span class="name-header">@Model.Name</span>
+                <div class="shopping-list-header-container">
+                    <div class="top-button" @onclick="(() => DeleteList(Model))">
+                        <i class="bi bi-check-lg"/>
+                        <span class="top-button-text">Finished</span>
+                    </div>
+                    <div class="top-button" @onclick="HandleClick">
+                        <i class="bi bi-plus-circle"/>
+                        <span class="top-button-text">Add Item</span>
+                    </div>
                 </div>
+            @if (Model.Items != null && Model.Items.Any())
+            {                
+                    @foreach (var item in Model.Items)
+                    {
+                        <div class="shopping-list-item @GetItemCssClass(item)">
+                            <span @onclick="() => ToggleItem(item)" style="cursor: pointer;">@item.Name</span>
+                            <button class="icon-button float-end" @onclick="(() => DeleteItem(item))">
+                                <i class="bi bi-trash" />
+                            </button>
+                        </div>
+                    }                
             }
             else
             {
                 <div class="no-items">No items in the list</div>
-            }
-            
-            <div style="margin-top:10px;">
-                <button class="btn futuristic-btn float-end" @onclick="(() => DeleteList(shoppingList))">Finished</button>
-            </div>            
-        </div>              
+            }            
+        </div>
     }
 }
 
-@code{
+<ShoppingListItemModal @bind-ShowDialog="@ShowDialog"
+                       Model=@Model
+                       OnShoppingListItemAdded="HandleShoppingListAdded"/>
+
+@code {
     [Parameter]
-    public int id {get; set;}
+    public int id { get; set; }
 
-    [CascadingParameter]
-    public IModalService Modal { get; set; } = default!;
+    private ShoppingList Model { get; set; }
 
-    private ShoppingList shoppingList { get; set; }
+    private bool ShowDialog { get; set; }
 
-    private List<ShoppingList> shoppingLists { get; set; }
+    private List<ShoppingList>? shoppingLists { get; set; } 
 
-    private ShoppingListItem newItem = new ShoppingListItem();    
 
     protected override async Task OnInitializedAsync()
     {
-        shoppingLists = await _shoppingListService.GetShoppingLists();
-        if (shoppingLists != null)
-        {
-            shoppingList = shoppingLists.FirstOrDefault(list => list.Id == id);
-        }
+        Model = await _shoppingListService.GetShoppingList(id);
     }
 
-    private async Task ShowAddShoppingListItemModal()
+    private void HandleClick()
     {
-        var parameters = new ModalParameters();
-        parameters.Add("ShoppingList", shoppingList); // Ensure the parameter name matches the expected property in your modal
-
-        var modal = Modal.Show<AddShoppingListItemModal>("Add New Item", parameters);        
-        var result = await modal.Result;
-
-        if (!result.Cancelled && result.Data is ShoppingListItem newItem)
-        {
-            shoppingLists = await _shoppingListService.GetShoppingLists(); // Refresh the list
-            Console.WriteLine("A new item was added");            
-        }
+        ShowDialog = true;
     }
 
     private async void ToggleItem(ShoppingListItem item)
     {
         item.Completed = !item.Completed;
-        await _shoppingListService.UpdateShoppingList(shoppingList);        
-    }    
+        await _shoppingListService.UpdateShoppingList(Model);
+    }
 
     private string GetItemCssClass(ShoppingListItem item)
     {
@@ -87,17 +77,27 @@
 
     private async Task DeleteItem(ShoppingListItem item)
     {
-        shoppingList.Items.Remove(item);
-        await _shoppingListService.UpdateShoppingList(shoppingList);
+        if(item != null)
+        {
+            Model = await _shoppingListService.DeleteItemFromShoppingList(Model, item);            
+        }
     }
 
     private async Task DeleteList(ShoppingList shoppingList)
     {
-        
-        if(shoppingList.Items?.All(x => x.Completed) == true && shoppingList.Items.Any())
-        {            
+        if (shoppingList.Items?.All(x => x.Completed) == true && shoppingList.Items.Any())
+        {
+            _toastService.ShowSuccess($"All items checked off. List deleted!");
             await _shoppingListService.DeleteShoppingList(shoppingList);
             NavMan.NavigateTo("/");
-        }        
+        }
+    }
+
+    private async Task HandleShoppingListAdded(ShoppingList newList)
+    {
+        Model = newList;
+        await _shoppingListService.UpdateShoppingList(Model);       
+        
+        StateHasChanged();
     }
 }

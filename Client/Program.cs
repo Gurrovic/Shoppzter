@@ -1,5 +1,5 @@
 using Blazored.LocalStorage;
-using Blazored.Modal;
+using Blazored.Toast;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Client.Services;
@@ -16,9 +16,11 @@ namespace Client
             builder.RootComponents.Add<HeadOutlet>("head::after");
 
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
-            builder.Services.AddBlazoredLocalStorage();
-            builder.Services.AddBlazoredModal();
-            builder.Services.AddScoped<IShoppingListService, ShoppingListService>();            
+            builder.Services.AddBlazoredLocalStorage();            
+            builder.Services.AddScoped<IShoppingListService, ShoppingListService>();
+            builder.Services.AddScoped<RecipeService>();
+            builder.Services.AddBlazoredToast();
+
 
             await builder.Build().RunAsync();
         }

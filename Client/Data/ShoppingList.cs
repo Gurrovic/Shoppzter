@@ -6,15 +6,14 @@ namespace Client.Data
     {
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "The name is required.")]
-        [MinLength(1, ErrorMessage = "The name must be at least 1 character long.")]
+        [Required(ErrorMessage = "Choose a name. Can't create an empty list.")]
         public string? Name { get; set; }
 
-        public List<ShoppingListItem>? Items { get; set; }
+        public List<ShoppingListItem> Items { get; set; } = new List<ShoppingListItem>();
 
         public ShoppingList(string name) 
         { 
-            Name = name;        
+            Name = name;           
         }
 
         public ShoppingList()

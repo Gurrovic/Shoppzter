@@ -1,45 +1,46 @@
-﻿.shopping-list-container {
-    max-width: 600px;
-    margin: auto;
-    background: #f0f0f0;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+﻿i {
+    margin: 0;
+    padding: 0;
 }
 
-.shopping-list-header {
-    background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 50%, rgba(64,109,119,1) 100%);
-    font-size: 18px;
-    color: #fff;
-    padding: 15px;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-    justify-content: space-between;
-    display: flex;
+.shopping-list-container {
+    max-width: 600px;    
+    margin: auto;   
+}
+
+.name-header{
+    display: flex;    
+    justify-content: center;
+    padding-top: 30px;
+    padding-bottom: 25px;
+    font-size: 24px;
+}
+
+.shopping-list-header-container{
+    display: flex;    
     align-items: center;
-    text-align: left;
-}
-
-    .shopping-list-header h5 {
-        margin: 0;
-        text-align: center;
-    }
-
-.shopping-list-items {
-    padding: 20px;
+    gap: 10px;
+    width: 90%;
+    margin-inline: auto;    
 }
 
 .shopping-list-item {
-    background: #ffffff;
-    color: darkblue;
-    margin-bottom: 5px;
-    padding: 10px;
-    border-radius: 5px;
     display: flex;
+    background-color: rgb(55, 55, 55);
+    color: white;
+    margin-block: 5px;
+    padding: 10px 25px;    
+    justify-content: space-between;
     align-items: center;
+       
 }
 
+    .shopping-list-item:last-of-type {
+        margin-bottom: 15px;
+    }
+
 .no-items {
-    text-align: center;
-    color: darkblue;
+    text-align: center;    
     padding: 20px;
+    margin-top: 30px;
 }

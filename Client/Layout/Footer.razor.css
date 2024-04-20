@@ -1,17 +1,7 @@
-body {
-    display: flex;
-    flex-direction: column;
-}
-
 .footerStyle {
     margin-top: auto;
     width: 100%;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 50%, rgba(64,109,119,1) 100%);
-    color: #FFF;
-    border: none;
-    padding: 12px 20px; /* Adjust padding as needed */
+    padding: 12px 20px;
     text-align: center;
+    border-top: 1px solid gray;
 }

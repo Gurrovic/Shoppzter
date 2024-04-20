@@ -1,18 +1,18 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="d-flex flex-column h-100">
-
-    <!-- Top Nav -->
+<div class="d-flex flex-column background">
+        
     <NavBar/>
 
     <!-- Main -->
     <main class="main-content">
         @Body        
-    </main>    
-
-    <!-- Footer-->
-    <footer>
-        <Footer/>
-    </footer>
+    </main>
+      
+    <Footer/>
 
 </div>
+
+<BlazoredToasts Position="Blazored.Toast.Configuration.ToastPosition.TopCenter"
+    Timeout="5">   
+</BlazoredToasts>

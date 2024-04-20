@@ -1,32 +1,32 @@
 ﻿@inject NavigationManager NavMan
 
-<div class="col-md-4 mb-4 d-flex">
-    <div class="card h-100 cursor-pointer flex-fill" @onclick="(() => NavigateToList(shoppingList.Id))">
+<div>
+    <div class="card cursor-pointer" @onclick="(() => NavigateToList(Model.Id))">
         <div class="card-body">
-            <h5 class="card-title">@shoppingList.Name
-                <button class="icon-button float-end" @onclick="(() => DeleteList(shoppingList))" @onclick:stopPropagation="true">
+            <p class="shopping-list-card">
+                @Model.Name
+                <button class="icon-button float-end" @onclick="(() => DeleteList(Model))" @onclick:stopPropagation="true">
                     <span class="bi bi-trash"/>
                 </button>
-            </h5>
+            </p>
         </div>
     </div>
 </div>
 
 @code {
     [Parameter]
-    public ShoppingList shoppingList { get; set; }
+    public ShoppingList Model { get; set; }    
 
     [Parameter]
-    public EventCallback<int> OnDelete { get; set; }
-
+    public EventCallback<ShoppingList> OnDelete { get; set; }
 
     private void NavigateToList(int id)
     {
         NavMan.NavigateTo($"showlist/{id}");
-    }
+    }   
 
-    private async Task DeleteList(ShoppingList shoppingList)
+    private async Task DeleteList(ShoppingList Model)
     {
-        await OnDelete.InvokeAsync(shoppingList.Id);
+        await OnDelete.InvokeAsync(Model);       
     }
 }

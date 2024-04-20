@@ -1,0 +1,44 @@
+﻿<GvModal @bind-IsVisible="@ShowDialog"
+         Header="Add New List">
+
+            <Content>
+                <EditForm id="myid" OnValidSubmit="@HandleValidSubmit" Model="Model">                    
+                    <DataAnnotationsValidator />                    
+                    <ValidationSummary />                   
+                    
+                    <GvInputText Autofocus="true"                                
+                                 @bind-Value="@Model.Name" />
+                </EditForm>                
+
+            </Content>
+            <Buttons>
+                <GvSaveButton FormId="myid">Save</GvSaveButton>
+                <GvCancelButton OnClick="CloseModal">Cancel</GvCancelButton>
+            </Buttons>
+</GvModal>
+
+@code {
+
+    [Parameter]
+    public bool ShowDialog { get; set; }
+
+    [Parameter]
+    public ShoppingList Model { get; set; }
+
+    [Parameter]
+    public EventCallback<ShoppingList> OnShoppingListAdded { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> ShowDialogChanged { get; set; }
+
+    private async Task HandleValidSubmit()
+    {
+        await OnShoppingListAdded.InvokeAsync(Model);        
+        ShowDialog = false;
+    }
+
+    private async Task CloseModal()
+    {        
+        await ShowDialogChanged.InvokeAsync(ShowDialog = false);
+    }
+}

@@ -1,0 +1,40 @@
+﻿@inject RecipeService _recipeService
+@inject IShoppingListService _shoppingListService
+@inject NavigationManager NavMan
+
+
+
+@* @if (Recipe != null)
+{
+    <div class="meal-container">
+        <div class="meal-image-header" style="background-image: url('Recipe.strMealThumb');">
+        </div>
+        <div class="meal-content">
+            <p class="meal-header">@Recipe.strMeal</p>
+            <div class="ingredients-header">
+                <h5>Ingredients</h5>
+                <div class="ingredients-list">
+                    <ul>
+                        @foreach (var ingredient in Recipe.GetIngredients())
+                        {
+                            <li>@ingredient</li>
+                        }
+                    </ul>
+                </div>
+                <p>@Recipe.strInstructions</p>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <p>Loading recipe...</p>
+} *@
+
+
+@code {
+
+    [Parameter]
+    public Recipe Recipe { get; set; }
+    
+}

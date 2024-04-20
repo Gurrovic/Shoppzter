@@ -3,7 +3,7 @@
 
 <input @ref="inputElement"
        @attributes="AdditionalAttributes"
-       class="@CssClass"
+       class="@CssClass form-control"
        value="@CurrentValueAsString"
        @onchange="EventCallback.Factory.CreateBinder<string>(this, __value => CurrentValueAsString = __value, CurrentValueAsString)" />
 

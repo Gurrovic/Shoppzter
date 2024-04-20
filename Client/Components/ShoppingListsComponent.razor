@@ -1,27 +1,29 @@
-﻿@inject ILocalStorageService localStorage
+﻿@inject IShoppingListService _shoppingListService
 
 @if (shoppingLists.Any())
-{
-    <div class="col">
-        @foreach (ShoppingList sl in shoppingLists)
-        {
-            <ShoppingListComponent shoppingList="sl"
-                                    OnDelete="DeleteList"/>   
-        }
-    </div>
+{    
+    @foreach (ShoppingList sl in shoppingLists)
+    {
+        <ShoppingListComponent Model="@sl"
+                               OnDelete="DeleteList"/>   
+    }    
 }
 
 @code {
+
     [Parameter]
     public List<ShoppingList> shoppingLists { get; set; }
     
-    private async Task DeleteList(int shoppingListId)
+    [Parameter]
+    public EventCallback<ShoppingList> OnDelete { get; set; }
+
+    private async Task DeleteList(ShoppingList Model)
     {
-        var itemToRemove = shoppingLists.FirstOrDefault(sl => sl.Id == shoppingListId);
-        if (itemToRemove != null)
+        if (Model != null)
         {
-            shoppingLists.Remove(itemToRemove);
-            await localStorage.SetItemAsync("shoppingLists", shoppingLists);            
+            shoppingLists.Remove(Model);
+            await _shoppingListService.DeleteShoppingList(Model);             
+            await OnDelete.InvokeAsync(Model);
         }
     }
 }

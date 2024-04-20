@@ -1,0 +1,115 @@
+﻿@page "/favorites/{RecipeId:int}"
+
+@inject RecipeService _recipeService
+@inject IShoppingListService _shoppingListService
+@inject NavigationManager NavMan
+@inject IToastService _toastService
+
+<div class="recipe-container">
+    <div class="recipe-buttons">
+        <div class="top-button" @onclick="() => SaveRecipe(Recipe)">
+            <i class="@(Recipe.Favorite ? "bi bi-heart-fill" : "bi bi-heart")"></i>
+            <span>Save</span>
+        </div>
+        <div class="top-button" @onclick="CreateNewList">
+            <i class="bi bi-plus-circle h1" />
+            <span>Create List</span>
+        </div>
+    </div>    
+
+    @if (Recipe != null)
+    {
+        <div class="meal-container">
+            <div class="meal-image-header" style="background-image: url('@Recipe.Thumbnail');" />
+            <div class="meal-content">
+                <div class="meal-header-container">
+                    <p class="meal-header">@Recipe.MealName</p>
+                </div>
+                <div class="ingredients-header">
+                    <h5>Ingredients</h5>
+                    <div class="ingredients-list">
+                        <ul>
+                            @for (int i = 0; i < Recipe.Ingredients.Count; i++)
+                            {
+                                <li>@Recipe.Ingredients[i] - @Recipe.Measures[i]</li>
+                            }
+                        </ul>
+                    </div>
+                    <ol>
+                        @foreach (var step in Recipe.Instructions.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries))
+                        {
+                            <li>@step</li>
+                        }
+                    </ol>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <p>Loading recipe...</p>
+    }
+</div>
+
+@code {
+
+    [Parameter]
+    public int RecipeId { get; set; }
+
+    public RecipeDto Recipe { get; set; }
+
+    private ShoppingList ShoppingList { get; set; }
+
+    private List<ShoppingList> shoppingLists { get; set; } = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        Recipe = await _recipeService.GetRecipe(RecipeId);
+    }
+
+    private async Task SaveRecipe(RecipeDto recipe)
+    {
+        if (recipe.Favorite == false)
+        {
+            _toastService.ShowSuccess($"Recipe saved to favorites");
+            recipe.Favorite = true;
+            await _recipeService.SaveRecipe(recipe);
+        }
+        else
+        {
+            _toastService.ShowSuccess($"Recipe removed from favorites");
+            recipe.Favorite = false;
+            await _recipeService.DeleteRecipe(recipe);
+        }
+    }
+
+    private async Task CreateNewList()
+    {
+        ShoppingList = new ShoppingList();
+        int id = 0;
+        ShoppingList.Name = Recipe.MealName;
+
+        foreach (var ingredient in Recipe.Ingredients)
+        {
+            ShoppingListItem newItem = new ShoppingListItem();
+            newItem.Name = ingredient;
+            newItem.Id = id;
+            ShoppingList.Items.Add(newItem);
+            id++;
+        }
+
+        await _shoppingListService.AddShoppingList(ShoppingList);
+        shoppingLists = await _shoppingListService.GetShoppingLists();
+
+        foreach (var shoppinglist in shoppingLists)
+        {
+            if (shoppinglist.Name == ShoppingList.Name)
+            {
+                ShoppingList.Id = shoppinglist.Id;
+                break;
+            }
+        }
+
+        NavMan.NavigateTo($"/showlist/{ShoppingList.Id}");
+    }
+}

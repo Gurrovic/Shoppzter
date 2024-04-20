@@ -1,8 +1,11 @@
 .main-content {
     flex-grow: 1;
-    overflow-y: auto; /* Allows scrolling */
-    padding-bottom: 60px; /* Adjust based on your footer's height */
-    padding-top: 20px;
-    margin-left: 25px;
-    margin-right: 25px;
+    overflow-y: auto;   
+    padding: 0;
+    margin: 0;    
+}
+
+.background {
+    min-height: 100vh;
+    background: rgb(35, 35, 35);
 }

@@ -1,0 +1,16 @@
+﻿.recipe-container {
+    max-width: 600px;    
+}
+
+.about-text {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    width: 90%;  
+    margin: 30px auto;
+}
+
+.about-text p {
+    margin-top: 20px;
+}

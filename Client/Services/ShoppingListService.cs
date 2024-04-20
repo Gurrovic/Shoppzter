@@ -16,13 +16,13 @@ namespace Client.Services
         public async Task<ShoppingList> GetShoppingList(int id)
         {
             var shoppingLists = await _localStorageService.GetItemAsync<List<ShoppingList>>("shoppingLists");
-            
+
             if (shoppingLists != null)
             {
-                var shoppingList = shoppingLists.FirstOrDefault(sl => sl.Id == id); // Assuming your ShoppingList class has an Id property.
+                var shoppingList = shoppingLists.FirstOrDefault(sl => sl.Id == id);
                 return shoppingList;
             }
-            
+
             return new ShoppingList();
         }
 
@@ -39,35 +39,58 @@ namespace Client.Services
 
         public async Task AddShoppingList(ShoppingList shoppingList)
         {
-            var shoppingLists = await GetShoppingLists(); // Get the current list
+            var shoppingLists = await GetShoppingLists();
             int maxId = shoppingLists.Any() ? shoppingLists.Max(sl => sl.Id) : 0;
             shoppingList.Id = maxId + 1;
             shoppingLists.Add(shoppingList);
-            await _localStorageService.SetItemAsync("shoppingLists", shoppingLists); // Update local storage
+            await _localStorageService.SetItemAsync("shoppingLists", shoppingLists);
         }
 
         public async Task UpdateShoppingList(ShoppingList shoppingList)
         {
-            var shoppingLists = await GetShoppingLists(); // Get the current list
-            var listIndex = shoppingLists.FindIndex(sl => sl.Id == shoppingList.Id); // Find the index of the list to update
+            var shoppingLists = await GetShoppingLists();
+            var listIndex = shoppingLists.FindIndex(sl => sl.Id == shoppingList.Id);
 
-            if (listIndex != -1) // Check if the list was found
+            if (listIndex != -1)
             {
-                shoppingLists[listIndex] = shoppingList; // Update the list at the found index
-                await _localStorageService.SetItemAsync("shoppingLists", shoppingLists); // Update local storage
+                shoppingLists[listIndex] = shoppingList;
+                await _localStorageService.SetItemAsync("shoppingLists", shoppingLists);
             }
         }
 
-        public async Task DeleteShoppingList(ShoppingList shoppingList)
+        public async Task<List<ShoppingList>> DeleteShoppingList(ShoppingList shoppingList)
         {
-            var shoppingLists = await GetShoppingLists(); // Get the current list
+            var shoppingLists = await GetShoppingLists();
             var listIndex = shoppingLists.FindIndex(sl => sl.Id == shoppingList.Id);
 
             if (listIndex != -1)
             {
                 shoppingLists.RemoveAt(listIndex);
-                await _localStorageService.SetItemAsync("shoppingLists", shoppingLists); // Update local storage
-            }            
+                await _localStorageService.SetItemAsync("shoppingLists", shoppingLists);
+                return shoppingLists;
+            }
+
+            return null!;
+        }
+
+        public async Task AddItemToShoppingList(ShoppingList list, ShoppingListItem item)
+        {
+            if (item.Name != null)
+            {
+                int maxId = list.Items.Any() ? list.Items.Max(item => item.Id) + 1 : 1;
+                item.Id = maxId;
+                list.Items.Add(item);
+
+                await UpdateShoppingList(list);
+            }
+        }
+
+        public async Task<ShoppingList> DeleteItemFromShoppingList(ShoppingList Model, ShoppingListItem item)
+        {
+            Model.Items.Remove(item);
+            await UpdateShoppingList(Model);
+
+            return Model;
         }
     }
 }

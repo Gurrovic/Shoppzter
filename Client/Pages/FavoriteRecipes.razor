@@ -1,0 +1,50 @@
+﻿@page "/favorites"
+
+@inject RecipeService _recipeService
+@inject IShoppingListService _shoppingListService
+@inject NavigationManager NavMan
+
+<div class="recipe-container">
+    @if (Recipes != null && Recipes.Any())
+    {    
+        <div class="shopping-list-container">
+            <span class="name-header">Your Saved Recipes</span>                
+                @foreach (var Recipe in Recipes)
+                {
+                    <div class="recipe-list-item">
+                    <span @onclick="() => HandleClick(Recipe.Id)">@Recipe.MealName</span>
+                        <button class="icon-button float-end" @onclick="(() => DeleteRecipe(Recipe))">
+                            <i class="bi bi-trash" />
+                        </button>
+                    </div>                       
+                }               
+         </div>
+    }
+                
+    else
+    {
+        <div class="no-items">No recipes have been saved in the list</div>
+    }
+</div>
+
+@code {
+    private List<RecipeDto> Recipes { get; set; } = new List<RecipeDto>();
+
+    protected override async Task OnInitializedAsync()
+    { 
+         Recipes = await _recipeService.GetRecipes();
+    }    
+    private void HandleClick(int id)
+    {
+        NavMan.NavigateTo($"favorites/{id}");
+    }    
+
+    private async Task DeleteRecipe(RecipeDto recipe)
+    {
+        if (recipe != null)
+        {
+            Recipes.Remove(recipe);
+            await _recipeService.DeleteRecipe(recipe);            
+        }
+    }
+}

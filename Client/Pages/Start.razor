@@ -1,73 +1,63 @@
 ﻿@page "/"
-
 @inject IShoppingListService _shoppingListService
+@inject IToastService _toastService
 
 <PageTitle>Shoppzter</PageTitle>
 
-<div class="futuristic-header">
-    <span style="font-size: 20px;">Shopping Lists</span>   
-    
-    <button @onclick="ShowAddShoppingListModal" class="add-button">+</button>
+<div class="shopping-list-container">
+    <div class="top-button-1" @onclick="HandleClick">    
+        <i class="bi bi-plus-circle"/>
+        <span class="top-button-text">New List</span>
+    </div>
+
+    @if(shoppingLists.Count > 0)
+    {
+        <ShoppingListsComponent shoppingLists="shoppingLists"
+                                OnDelete="HandleListChanged" />
+    }
+    else
+    {    
+        <div class="no-lists">No lists. Create your first list!</div>    
+    }
 </div>
 
-<div class="horizontal-line"></div>
+<ShoppingListModal Model="@Model"
+                   ShowDialog="@ShowDialog" 
+                   OnShoppingListAdded="HandleShoppingListAdded"/>
 
-<ShoppingListsComponent shoppingLists="shoppingLists"/>
 
 
 @code {
 
-    List<ShoppingList> shoppingLists = new List<ShoppingList>();
-    ShoppingList shoppingList = new ShoppingList();
+    private List<ShoppingList> shoppingLists = new List<ShoppingList>();
 
-    [CascadingParameter] 
-    public IModalService Modal { get; set; } = default!;
+    private ShoppingList Model { get; set; } = new ShoppingList();
+
+    private bool ShowDialog { get; set; }    
 
     protected override async Task OnInitializedAsync()
     {
-        shoppingLists = await _shoppingListService.GetShoppingLists();        
-    }    
+        shoppingLists = await _shoppingListService.GetShoppingLists();
+    } 
 
-    // private async Task ShowAddShoppingListModal()
-    // {
-    //     var modal = Modal.Show<AddShoppingListModal>("Add New List");
-    //     var result = await modal.Result;
-
-    //     if (!result.Cancelled && result.Data is ShoppingList)
-    //     {
-    //         Console.WriteLine("A new shopping list was added");
-    //         shoppingLists = await _shoppingListService.GetShoppingLists(); // Refresh the list
-    //     }
-    // }
-
-    private async Task ShowAddShoppingListModal()
+    private void HandleClick()
     {
-        var modal = Modal.Show<AddShoppingListModal>("Add New List");
-        var result = await modal.Result;
-
-        if (!result.Cancelled && result.Data is ShoppingList newShoppingList)
-        {
-            // Optimistically add the new list to the UI
-            shoppingLists.Add(newShoppingList);
-            // Update the UI to reflect the change
-            StateHasChanged();
-
-            // try
-            // {
-            //     // Attempt to add the new list to the backend
-            //     await _shoppingListService.AddShoppingList(newShoppingList);
-            //     // Optionally, refresh the list from the backend to ensure it's up-to-date
-            //     // shoppingLists = await _shoppingListService.GetShoppingLists();
-            // }
-            // catch (Exception ex)
-            // {
-            //     // Handle any errors that occur during backend update
-            //     // For example, roll back the optimistic UI update or show an error message
-            //     Console.WriteLine($"Error adding shopping list: {ex.Message}");
-            //     shoppingLists.Remove(newShoppingList);
-            //     StateHasChanged();
-            // }
-        }
+        Model = new ShoppingList();
+        ShowDialog = true;        
     }
 
+    private async Task HandleShoppingListAdded(ShoppingList Model)
+    {
+        _toastService.ShowSuccess($"New list created: {Model.Name}");
+        await _shoppingListService.AddShoppingList(Model);
+        shoppingLists = await _shoppingListService.GetShoppingLists();        
+    }
+
+    private void HandleListChanged(ShoppingList Model)
+    {
+        _toastService.ShowSuccess($"List deleted: {Model.Name}");
+        Model = new ShoppingList();
+        ShowDialog = false;
+        StateHasChanged();
+    }
 }

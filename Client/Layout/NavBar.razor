@@ -1,30 +1,46 @@
-﻿<div class="ps-3 navbar navStyle">
+﻿@inject NavigationManager NavManager
+
+<div class="navbar navStyle">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">Shoppzter</a>
+        <a class="navbar-brand" @onclick="GetHref">@ActiveNavItem</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
+        <!-- Desktop Navigation Links -->
+        <div class="desktop-nav">
+            <NavLink class="nav-link-desktop" href="" Match="NavLinkMatch.All">Shopping Lists</NavLink>
+            <NavLink class="nav-link-desktop" href="favorites">Favorites</NavLink>
+            <NavLink class="nav-link-desktop" href="recipes">Recipe Generator</NavLink>
+            <NavLink class="nav-link-desktop" href="about">About</NavLink>
+        </div>
     </div>
 </div>
+<hr>
 
 <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
     <nav class="flex-column">
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="">
-                <span class="bi bi-cart-dash" aria-hidden="true"></span>
-                <span class=white>Shopping Lists</span>
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="bi bi-cart-dash"></span>
+                <span>Shopping Lists</span>
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="favorites">
+                <span class="bi bi-cart-dash"></span>
+                <span>Favorites</span>
             </NavLink>
         </div>
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="recipes">
-                <span class="bi bi-book" aria-hidden="true"></span> 
-                <span class="white">Recipes</span>
+                <span class="bi bi-book"></span>
+                <span>Recipe Generator</span>
             </NavLink>
         </div>
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="about">
-                <span class="bi bi-info-circle" aria-hidden="true"></span>
-                <span class="white">About</span>
+                <span class="bi bi-info-circle"></span>
+                <span>About</span>
             </NavLink>
         </div>
     </nav>
@@ -32,11 +48,54 @@
 
 @code {
     private bool collapseNavMenu = true;
+    private string? ActiveNavItem = "Shopping Lists"; // Default to Home or similar
 
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+    private string NavMenuCssClass => collapseNavMenu ? "" : "show";
+
+    protected override void OnInitialized()
+    {
+        NavManager.LocationChanged += HandleLocationChanged;
+        UpdateActiveNavItem(NavManager.Uri);
+    }    
+
+    private void HandleLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
+    {
+        UpdateActiveNavItem(e.Location);
+    }
+
+    private void UpdateActiveNavItem(string uri)
+    {
+        var uriAbsPath = new Uri(uri).AbsolutePath;
+        if (uriAbsPath.Contains("/recipes"))
+        {
+            ActiveNavItem = "Recipe Generator";
+        }
+        else if (uriAbsPath.Contains("/about"))
+        {
+            ActiveNavItem = "About";
+        }
+        else if (uriAbsPath.Contains("/favorites"))
+        {
+            ActiveNavItem = "Favorites";
+        }
+        else
+        {
+            ActiveNavItem = "Shopping Lists"; // Default or another fallback
+        }
+
+        StateHasChanged(); // Refresh the component if necessary
+    }
 
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+    }
+
+    public void GetHref()
+    {
+        if (ActiveNavItem == "Shopping Lists")
+        {
+            NavManager.NavigateTo("");
+        }
     }
 }

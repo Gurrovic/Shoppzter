@@ -1,0 +1,19 @@
+﻿<button type="submit" form="@FormId">@ChildContent</button>
+
+@code {
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+
+    [EditorRequired]
+    [Parameter] 
+    public string FormId { get; set; }
+
+    private async Task Click()
+    {        
+        await OnClick.InvokeAsync();
+    }
+}
